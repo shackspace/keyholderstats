@@ -1,6 +1,9 @@
 from flask import Flask
 import threading, json, os, time, requests
+from flask.ext.cors import CORS
+
 app = Flask(__name__)
+CORS(app)
 
 #Read the database file if there is one
 if os.path.isfile("keyholderstats.json"):
