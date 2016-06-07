@@ -14,19 +14,20 @@ else:
 def crawlStats():
 	global stats
 	while True:
-		time.sleep(30) #Not nice, to lazy for a threading Timer here. TODO
+		time.sleep(120) #Not nice, to lazy for a threading Timer here. TODO
 		global stats
 		r = requests.get("http://portal.shack:8088/status")
 		result = r.json()
-	
-		if result["keyholder"] in stats:
-			stats[result["keyholder"]] += 120
-		else:
-			stats[result["keyholder"]] = 120
-	
-		f = open("keyholderstats.json", "w")
-		f.write(json.dumps(stats))
-		f.close()
+		
+		if result["status"] == "open": #Dont count closed hours		
+			if result["keyholder"] in stats:
+				stats[result["keyholder"]] += 120
+			else:
+				stats[result["keyholder"]] = 120
+
+			f = open("keyholderstats.json", "w")
+			f.write(json.dumps(stats))
+			f.close()
 
 #Webserver
 @app.route('/')
@@ -37,4 +38,4 @@ def get_stats():
 threading.Thread(target=crawlStats).start()
 
 if __name__ == '__main__':
-    app.run("0.0.0.0", port=8088)
+	app.run("0.0.0.0", port=8088)
