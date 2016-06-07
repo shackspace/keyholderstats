@@ -14,16 +14,16 @@ else:
 def crawlStats():
 	global stats
 	while True:
-		time.sleep(120) #Not nice, to lazy for a threading Timer here. TODO
+		time.sleep(30) #Not nice, to lazy for a threading Timer here. TODO
 		global stats
 		r = requests.get("http://portal.shack:8088/status")
 		result = r.json()
 		
 		if result["status"] == "open": #Dont count closed hours		
 			if result["keyholder"] in stats:
-				stats[result["keyholder"]] += 120
+				stats[result["keyholder"]] += 30
 			else:
-				stats[result["keyholder"]] = 120
+				stats[result["keyholder"]] = 30
 
 			f = open("keyholderstats.json", "w")
 			f.write(json.dumps(stats))
