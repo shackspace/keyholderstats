@@ -1,5 +1,5 @@
 from flask import Flask
-import threading, json, os, time, requests
+import threading, json, os, time, requests, datetime
 from flask.ext.cors import CORS
 
 app = Flask(__name__)
@@ -13,9 +13,11 @@ else:
 
 def crawlStats():
 	global stats
+	i = 0
 	while True:
 		time.sleep(30) #Not nice, to lazy for a threading Timer here. TODO
 		global stats
+		i += 1
 		r = requests.get("http://portal.shack:8088/status")
 		result = r.json()
 		
@@ -28,6 +30,14 @@ def crawlStats():
 			f = open("keyholderstats.json", "w")
 			f.write(json.dumps(stats))
 			f.close()
+			
+		#Backup the file once a day
+		if i == 2*60*24:
+			i = 0
+			now = datetime.datetime.now()
+			backupFile = open("keyholderstats.json." + now.strftime("%Y-%m-%d"), "w")
+			backupFile.write(json.dumps(stats))
+			backupFile.close()
 
 #Webserver
 @app.route('/')
